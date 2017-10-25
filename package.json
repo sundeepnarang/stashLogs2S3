@@ -1,5 +1,5 @@
 {
-  "name": "stashLogs2S3",
+  "name": "stashlogs2s3",
   "version": "0.0.2",
   "description": "",
   "main": "index.js",
