@@ -20,10 +20,13 @@ module.exports = function({inputs, awsConfig,options={}},done=()=>{}){
 
     const Manager = new S3Manager(awsConfig);
 
-    function uploadFile(opPath){
+    function uploadFile(opPath,prefix){
         return function(file,done) {
             const {name, path} = file;
-            Manager.uploadFile({loc: `${opPath}/${datePrefix}/${name}`, filePath: path}, (err) => {
+            if(true===prefix){
+                prefix = datePrefix
+            }
+            Manager.uploadFile({loc: `${opPath}/${prefix}/${name}`, filePath: path}, (err) => {
                 if (err) {
                     _log(`Errored in uploading [${path}] : `, err);
                     return done(null);
@@ -40,8 +43,8 @@ module.exports = function({inputs, awsConfig,options={}},done=()=>{}){
         }
     }
 
-    function stashDir({files,opPath,ipDir},done){
-        async.eachSeries(files,uploadFile(opPath),(err)=>{
+    function stashDir({files,opPath,ipDir,prefix},done){
+        async.eachSeries(files,uploadFile(opPath,prefix),(err)=>{
             if(err){
                 _log(`Errored in dir [${ipDir}] : `,err);
                 return done(null);
@@ -51,7 +54,7 @@ module.exports = function({inputs, awsConfig,options={}},done=()=>{}){
         });
     }
 
-    function processDirectory({ipDir=false, ipFileRegex=/./, opPath=""}={},done) {
+    function processDirectory({ipDir=false, ipFileRegex=/./, opPath="", prefix=true}={},done) {
         if(!ipDir){
             _log(`Errored no ipDir [${ipDir}] : `);
             return done(null);
@@ -62,7 +65,7 @@ module.exports = function({inputs, awsConfig,options={}},done=()=>{}){
                 return done(null);
             }
             _log(`Started directory [${ipDir}]`);
-            stashDir({files,opPath,ipDir},(err)=>{
+            stashDir({files,opPath,ipDir,prefix},(err)=>{
                 return done(err);
             })
         });
