@@ -18,7 +18,7 @@ module.exports = function({inputs, awsConfig,options={}},done=()=>{}){
 
     const datePrefix = `${now.getFullYear()}${now.getMonth()+1}${now.getDate()}`;
 
-    const Manager = new S3Manager({awsConfig,options});
+    const Manager = new S3Manager({awsConfig},options);
 
     function uploadFile(opPath,prefix){
         return function(file,done) {
